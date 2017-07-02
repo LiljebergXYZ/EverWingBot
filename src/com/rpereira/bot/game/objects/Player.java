@@ -1,0 +1,45 @@
+package com.rpereira.bot.game.objects;
+
+import com.rpereira.bot.game.Game;
+
+public class Player extends GameObject {
+
+	private static final int X_MID = (int) (Game.X_TOP_LEFT + Game.GAME_WIDTH * 0.5f);
+	private static final int Y_MID = (int) (Game.Y_TOP_LEFT + Game.GAME_HEIGHT * 0.85f);
+
+	public Player() {
+		super();
+	}
+
+	public void respawn() {
+		super.getBox().set(X_MID, Y_MID, Game.SLOT_X, Game.SLOT_Y);
+	}
+
+	public void update(Game game) {
+		int nextX = this.findNextSafePosition(game);
+
+		if (nextX == super.getBox().x) {
+			return;
+		}
+
+		// select character
+		game.moveMouse(this.getX(), this.getY());
+		game.pressMouse();
+
+		// move it to next safe position
+		this.setX(this.findNextSafePosition(game));
+		game.moveMouse(this.getX(), this.getY());
+
+		// unpress
+		game.unpressMouse();
+	}
+
+	public int findNextSafePosition(Game game) {
+		long t = System.currentTimeMillis();
+		if (t % 5000 < 200)
+			return (X_MID);
+		if (t % 200 < 100)
+			return ((int) (X_MID - Game.GAME_WIDTH * 0.4f));
+		return ((int) (X_MID + Game.GAME_WIDTH * 0.4f));
+	}
+}
