@@ -7,11 +7,14 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 import com.rpereira.bot.game.objects.GameObject;
 import com.rpereira.bot.game.objects.Player;
+import com.rpereira.bot.game.recognition.ImageRecognizer;
+import com.rpereira.bot.game.recognition.ImageRecognizerTest;
 
 public class Game {
 
@@ -40,13 +43,16 @@ public class Game {
 
 	private Robot bot; // java robot to handle mouse events
 	private Player player; // the player
+	private ImageRecognizer recognizer;
 	private BufferedImage screen; // the screen
-	private GameObject[] missiles; // unused
+	private BufferedImage game; // the game
+	private ArrayList<GameObject> missiles; // unused
 
 	public Game() throws AWTException {
 		this.player = new Player();
+		this.recognizer = new ImageRecognizerTest();
 		this.bot = new Robot();
-		this.missiles = new GameObject[5];
+		this.missiles = new ArrayList<GameObject>();
 		KeyboardEvents.init(); // init keyboard events
 	}
 
@@ -117,27 +123,22 @@ public class Game {
 	public void updateScreen() {
 		// get screenshot
 		this.screen = this.bot.createScreenCapture(new Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
-
 	}
 
 	/** update the game (when in game) */
 	public void update() {
-		this.loadGameObjects();
+		this.game = this.screen.getSubimage(X_TOP_LEFT, Y_TOP_LEFT, GAME_WIDTH, GAME_HEIGHT);
+		this.recognizer.setImage(this.game);
+		this.recognizer.recognize();
 		this.player.update(this);
 	}
 
-	/** parse image to load game objects */
-	public void loadGameObjects() {
-		for (int i = 0; i < this.missiles.length; i++) {
-			this.missiles[i] = null;
-		}
-	}
-
-	public GameObject[] getMissiles() {
+	public ArrayList<GameObject> getGameObjects() {
 		return (this.missiles);
 	}
 
 	public void stop() {
 		KeyboardEvents.deinit();
+		this.recognizer.plot();
 	}
 }

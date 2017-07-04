@@ -9,6 +9,7 @@ public class Player extends GameObject {
 
 	public Player() {
 		super();
+		this.respawn();
 	}
 
 	public void respawn() {
@@ -18,23 +19,26 @@ public class Player extends GameObject {
 	public void update(Game game) {
 		int nextX = this.findNextSafePosition(game);
 
-		if (nextX == super.getBox().x) {
+		if (nextX == super.getBox().getMinX()) {
 			return;
 		}
 
 		// select character
-		game.moveMouse(this.getX(), this.getY());
+		game.moveMouse(this.getBox().getCenterX(), this.getBox().getCenterY());
 		game.pressMouse();
 
 		// move it to next safe position
-		this.setX(this.findNextSafePosition(game));
-		game.moveMouse(this.getX(), this.getY());
+		this.getBox().setMinX(this.findNextSafePosition(game));
+		game.moveMouse(this.getBox().getCenterX(), this.getBox().getCenterY());
 
 		// unpress
 		game.unpressMouse();
 	}
 
 	public int findNextSafePosition(Game game) {
+		if (true) {
+			return (this.getBox().getMinX());
+		}
 		long t = System.currentTimeMillis();
 		if (t % 5000 < 200)
 			return (X_MID);

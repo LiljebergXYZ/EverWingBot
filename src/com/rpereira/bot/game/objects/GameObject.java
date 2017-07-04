@@ -12,20 +12,4 @@ public abstract class GameObject {
 	public BoundingBox getBox() {
 		return (this.box);
 	}
-
-	public int getX() {
-		return (this.box.x);
-	}
-
-	public int getY() {
-		return (this.box.y);
-	}
-
-	public void setX(int x) {
-		this.box.x = x;
-	}
-
-	public void setY(int y) {
-		this.box.y = y;
-	}
 }

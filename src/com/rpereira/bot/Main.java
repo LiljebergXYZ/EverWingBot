@@ -11,8 +11,10 @@ public class Main {
 		System.out.println("Starting bot");
 
 		Game game = new Game();
+		System.out.println("1");
 
 		while (game.isRunning()) {
+
 			game.updateScreen();
 			if (game.isFocused()) {
 				if (game.isLost()) {
@@ -23,7 +25,7 @@ public class Main {
 					game.update();
 				}
 			}
-			Thread.sleep(50);
+			Thread.sleep(100);
 		}
 		System.out.println("Stopping bot");
 		game.stop();

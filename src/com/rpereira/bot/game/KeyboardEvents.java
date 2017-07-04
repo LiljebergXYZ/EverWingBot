@@ -15,7 +15,7 @@ public class KeyboardEvents implements NativeKeyListener {
 	// number....0111123456789ab
 	// private static final boolean[] PRESSED_MAP = new
 	// boolean[NativeKeyEvent.NATIVE_KEY_LAST];
-	private static final boolean[] PRESSED_MAP = new boolean[20000];
+	private static final boolean[] PRESSED_MAP = new boolean[60000];
 	private static boolean INIT = false;
 
 	public final static boolean isPressed(int key) {
