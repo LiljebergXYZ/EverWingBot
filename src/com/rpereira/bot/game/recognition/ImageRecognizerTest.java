@@ -8,13 +8,30 @@ import com.rpereira.bot.game.objects.GameObject;
 public class ImageRecognizerTest extends ImageRecognizer {
 
 	/** the gradient color of the image (derivative of color) */
-	private BufferedImage gradient;
+	private float[][] gradient;
+	private int w;
+	private int h;
 
 	@Override
-	public void recognize() {
-		super.cleanGameObjects();
+	public void recognize(BufferedImage bufferedImage) {
+		super.recognize(bufferedImage);
 		this.updateGradient();
 		this.parseGradient();
+	}
+
+	/** calculate the gradient image */
+	private void updateGradient() {
+		BufferedImage image = super.getImage();
+
+		this.w = image.getWidth();
+		this.h = image.getHeight();
+		this.gradient = new float[w][h];
+
+		for (int x = 0; x < w; x++) {
+			for (int y = 0; y < h; y++) {
+				this.gradient[x][y] = this.getGradient(image, x, y);
+			}
+		}
 	}
 
 	class GameObjectPixelNode {
@@ -28,19 +45,17 @@ public class ImageRecognizerTest extends ImageRecognizer {
 
 	/** flood fill the gradient to find hitboxes */
 	private void parseGradient() {
-		int w = this.gradient.getWidth();
-		int h = this.gradient.getHeight();
-		boolean[][] visited = new boolean[w][h];
-		for (int x = 0; x < w; x++) {
-			for (int y = 0; y < h; y++) {
+		boolean[][] visited = new boolean[this.w][this.h];
+		for (int x = 0; x < this.w; x++) {
+			for (int y = 0; y < this.h; y++) {
 
 				// if already visited
 				if (visited[x][y]) {
 					continue;
 				}
 
-				// if black pixel, set visited and continue ;
-				if (this.gradient.getRGB(x, y) == 0) {
+				// if black pixel, continue ;
+				if (this.gradient[x][y] == 0) {
 					visited[x][y] = true;
 					continue;
 				}
@@ -75,15 +90,6 @@ public class ImageRecognizerTest extends ImageRecognizer {
 
 				// add the game object
 				super.addGameObject(gameObject);
-
-				int minx = gameObject.getBox().getMinX();
-				int maxx = gameObject.getBox().getMaxX();
-				int miny = gameObject.getBox().getMinY();
-				int maxy = gameObject.getBox().getMaxY();
-
-				//TODO fix me
-				System.out.println("game object added: " + minx + " : " + miny + " : " + maxx + " : " + maxy + " : " + w
-						+ " : " + h);
 			}
 		}
 	}
@@ -92,7 +98,7 @@ public class ImageRecognizerTest extends ImageRecognizer {
 			boolean[][] visited, int x, int y) {
 
 		// if out of bounds or alreadt visited, stop the recursivity
-		if (x < 0 || x >= w || y < 0 || y >= h || visited[x][y] || this.gradient.getRGB(x, y) == 0) {
+		if (x < 0 || x >= w || y < 0 || y >= h || visited[x][y] || this.gradient[x][y] == 0) {
 			return;
 		}
 
@@ -112,29 +118,16 @@ public class ImageRecognizerTest extends ImageRecognizer {
 		queue.add(new GameObjectPixelNode(x, y));
 	}
 
-	/** calculate the gradient image */
-	private void updateGradient() {
-		BufferedImage image = super.getImage();
-		this.gradient = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-
-		for (int x = 0; x < this.gradient.getWidth(); x++) {
-			for (int y = 0; y < this.gradient.getHeight(); y++) {
-				int color = this.getGradient(image, x, y);
-				this.gradient.setRGB(x, y, color);
-			}
-		}
-	}
-
 	@Override
 	public void plot() {
 		super.plot();
-		this.plot(this.gradient);
+		// this.plot(this.gradient);
 	}
 
 	/** get the gradient for the given image at the given coordinates */
-	private int getGradient(BufferedImage image, int x, int y) {
+	private float getGradient(BufferedImage image, int x, int y) {
 
-		if (x <= 0 || x >= this.gradient.getWidth() - 1 || y <= 0 || y >= this.gradient.getHeight() - 1) {
+		if (x <= 0 || x >= this.w - 1 || y <= 0 || y >= this.h - 1) {
 			return (0);
 		}
 
@@ -143,21 +136,21 @@ public class ImageRecognizerTest extends ImageRecognizer {
 		int cy1 = image.getRGB(x, y - 1);
 		int cy2 = image.getRGB(x, y + 1);
 
-		int dxr = abs(getR(cx2) - getR(cx1));
-		int dxg = abs(getG(cx2) - getG(cx1));
-		int dxb = abs(getB(cx2) - getB(cx1));
+		float dxr = abs(getR(cx2) - getR(cx1));
+		float dxg = abs(getG(cx2) - getG(cx1));
+		float dxb = abs(getB(cx2) - getB(cx1));
 
-		int dyr = abs(getR(cy2) - getR(cy1));
-		int dyg = abs(getG(cy2) - getG(cy1));
-		int dyb = abs(getB(cy2) - getB(cy1));
+		float dyr = abs(getR(cy2) - getR(cy1));
+		float dyg = abs(getG(cy2) - getG(cy1));
+		float dyb = abs(getB(cy2) - getB(cy1));
 
 		float dr = (dxr + dyr) * 0.5f;
 		float dg = (dxg + dyg) * 0.5f;
 		float db = (dxb + dyb) * 0.5f;
 
 		float f = max(0.0f, min(dr + dg + db, 255.0f)) / 255.0f;
-		int u = (int) (255.0f * f * f);
-		return (u < 50 ? 0 : intColor(u, u, u));
+		f *= f;
+		return (f < 0.1f ? 0.0f : 1.0f);
 	}
 
 	private static int interpolate(int c1, int c2, float f) {

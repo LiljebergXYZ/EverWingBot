@@ -27,15 +27,12 @@ public abstract class ImageRecognizer {
 		this.gameObjects.add(gameObject);
 	}
 
-	/** set the image to recognize */
-	public final void setImage(BufferedImage bufferedImage) {
+	/** do the image recognition */
+	public void recognize(BufferedImage bufferedImage) {
 		this.image = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), bufferedImage.getType());
 		this.image.setData(bufferedImage.getRaster());
 		this.gameObjects.clear();
 	}
-
-	/** do the image recognition */
-	public abstract void recognize();
 
 	/** get the image recognized */
 	public final BufferedImage getImage() {
@@ -55,15 +52,14 @@ public abstract class ImageRecognizer {
 			int miny = gameObject.getBox().getMinY();
 			int maxy = gameObject.getBox().getMaxY();
 
-			
 			for (int x = minx; x < maxx; x++) {
-				image.setRGB(x, miny, 0xFF0000FF);
-				image.setRGB(x, maxy, 0xFF0000FF);
+				image.setRGB(x, miny, 0xFFFF0000);
+				image.setRGB(x, maxy, 0xFFFF0000);
 			}
 
 			for (int y = miny; y < maxy; y++) {
-				image.setRGB(minx, y, 0xFF0000FF);
-				image.setRGB(maxx, y, 0xFF0000FF);
+				image.setRGB(minx, y, 0xFFFF0000);
+				image.setRGB(maxx, y, 0xFFFF0000);
 			}
 		}
 
@@ -82,9 +78,5 @@ public abstract class ImageRecognizer {
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
-	}
-
-	public void cleanGameObjects() {
-		this.gameObjects.clear();
 	}
 }

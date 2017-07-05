@@ -128,8 +128,7 @@ public class Game {
 	/** update the game (when in game) */
 	public void update() {
 		this.game = this.screen.getSubimage(X_TOP_LEFT, Y_TOP_LEFT, GAME_WIDTH, GAME_HEIGHT);
-		this.recognizer.setImage(this.game);
-		this.recognizer.recognize();
+		this.recognizer.recognize(this.game);
 		this.player.update(this);
 	}
 
