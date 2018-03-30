@@ -2,6 +2,8 @@ package com.rpereira.bot.game.objects;
 
 import com.rpereira.bot.game.Game;
 
+import static java.lang.Math.toIntExact;
+
 public class Player extends GameObject {
 
 	private static final int X_MID = (int) (Game.X_TOP_LEFT + Game.GAME_WIDTH * 0.5f);
@@ -24,12 +26,12 @@ public class Player extends GameObject {
 		}
 
 		// select character
-		game.moveMouse(this.getBox().getCenterX(), this.getBox().getCenterY());
+		game.moveMouse(toIntExact(game.windowPos.get(0)) + this.getBox().getCenterX(), toIntExact(game.windowPos.get(1)) + this.getBox().getCenterY());
 		game.pressMouse();
 
 		// move it to next safe position
 		this.getBox().setMinX(this.findNextSafePosition(game));
-		game.moveMouse(this.getBox().getCenterX(), this.getBox().getCenterY());
+		game.moveMouse(toIntExact(game.windowPos.get(0)) + this.getBox().getCenterX(), toIntExact(game.windowPos.get(1)) + this.getBox().getCenterY());
 
 		// unpress
 		game.unpressMouse();

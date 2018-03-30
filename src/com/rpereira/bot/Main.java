@@ -11,7 +11,6 @@ public class Main {
 		System.out.println("Starting bot");
 
 		Game game = new Game();
-		System.out.println("1");
 
 		while (game.isRunning()) {
 
