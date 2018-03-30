@@ -1,5 +1,11 @@
 # EverWingBot
 
+Not sure why I made this, but it's too late now
+
+* Added detection of window location
+* Sets the window size
+* Only macos support
+
 -----------------------------------------------------------------------
 
 ## HOW TO USE ##
